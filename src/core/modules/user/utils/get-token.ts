@@ -1,7 +1,7 @@
 import { createParamDecorator, UnauthorizedException } from '@nestjs/common';
 
 export function getTokenFromHeader(request: any): string | undefined {
-  const authorizationHeader = request.headers.authorization;
+  const authorizationHeader = request?.headers?.authorization;
   if (!authorizationHeader) {
     return undefined;
   }
