@@ -13,6 +13,7 @@ import { AppService } from './app.service';
 import { CoreModule } from './core/core.module';
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
 import { APP_GUARD } from '@nestjs/core';
+import { BankAccountModule } from './bank-account/bank-account.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { APP_GUARD } from '@nestjs/core';
       context: ({ req }) => ({ req }),
       introspection: true,
     }),
+    BankAccountModule,
   ],
   controllers: [AppController],
   providers: [
