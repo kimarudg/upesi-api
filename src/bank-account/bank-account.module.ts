@@ -3,6 +3,7 @@ import { ClassProvider, Module } from '@nestjs/common';
 import { BankAccountRepository } from './repositories/bank-account.repository';
 import { BankAccountResolver } from './resolvers/bank-account/bank-account.resolver';
 import { BankAccountService } from './services/bank-account/bank-account.service';
+import { BankAccountStatementService } from './services/bank-account-statement/bank-account-statement.service';
 
 const serviceProvider: ClassProvider = {
   provide: TYPES.BankAccountService,
@@ -19,6 +20,6 @@ const services = [BankAccountService];
 const providers = [serviceProvider, repositoryProvider];
 
 @Module({
-  providers: [...resolvers, ...services, ...providers],
+  providers: [...resolvers, ...services, ...providers, BankAccountStatementService],
 })
 export class BankAccountModule {}
