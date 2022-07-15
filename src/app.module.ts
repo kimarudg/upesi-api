@@ -22,7 +22,7 @@ import { BankAccountModule } from './bank-account/bank-account.module';
       debug: config.isDevelopment,
       playground: true,
       autoSchemaFile: './schema.gql',
-      include: [CoreModule],
+      include: [CoreModule, BankAccountModule],
       context: ({ req }) => ({ req }),
       introspection: true,
     }),

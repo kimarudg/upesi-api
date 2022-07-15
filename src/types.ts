@@ -1,31 +1,20 @@
 const sharedTypes = {
   AsyncDatabaseConnection: Symbol('AsyncDatabaseConnection'),
-  CurrentUser: Symbol('CurrentUser'),
   EntityManager: Symbol('EntityManager'),
-  IFixtures: Symbol('IFixtures'),
   QueryRunner: Symbol('QueryRunner'),
-  WinstonTransport: Symbol('WinstonTransport'),
   WinstonLogger: Symbol('WinstonLogger'),
 };
 
 const serviceTypes = {
   MailService: Symbol('MailService'),
-  JobsService: Symbol('JobsService'),
-  TaskService: Symbol('TaskService'),
-  FileService: Symbol('FileService'),
-  ClientService: Symbol('ClientService'),
-  AudioRatingService: Symbol('AudioRatingService'),
-  AudioSplittingService: Symbol('AudioSplittingService'),
   UserService: Symbol('UserService'),
   AuthService: Symbol('AuthService'),
-  RolesService: Symbol('RolesService'),
-  PermissionService: Symbol('PermissionService'),
   LoggerService: Symbol('LoggerService'),
+  BankAccountService: Symbol('BankAccountService'),
 };
 
 const repositoryTypes = {
-  JobRepository: Symbol('JobRepository'),
-  FileRepository: Symbol('FileRepository'),
+  BankAccountRepository: Symbol('BankAccountRepository'),
 };
 const ERROR_CODES = {
   InvalidParameterError: 422,

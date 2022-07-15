@@ -1,10 +1,13 @@
+import { UserModel } from '@core/modules/user/models/user.model';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { IsDate, IsEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -13,14 +16,14 @@ import { AsEither, AsInput, AsOutput } from '@core/validators';
 
 @ObjectType()
 export class DefaultFields {
-  @Field(type => ID)
+  @Field((type) => ID)
   @PrimaryGeneratedColumn('uuid')
   @IsOptional(AsEither)
   @IsUUID('4', AsOutput)
   @ApiResponseProperty()
   id?: string;
 
-  @Field(type => Boolean, { nullable: false })
+  @Field((type) => Boolean, { nullable: false })
   @Column({ name: 'archived', default: false })
   @IsOptional(AsEither)
   @ApiResponseProperty()
@@ -66,7 +69,7 @@ export class DefaultFields {
   @ApiResponseProperty()
   createdBy?: string;
 
-  @Field(type => GraphQLJSONObject, { nullable: true })
+  @Field((type) => GraphQLJSONObject, { nullable: true })
   @Column({ name: 'meta_data', type: 'jsonb', nullable: true, default: {} })
   @IsOptional(AsEither)
   @ApiResponseProperty()
