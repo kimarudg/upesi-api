@@ -21,6 +21,7 @@ import {
   RegisterUserInput,
 } from '@core/modules/user/validators';
 import { UserSearchCriteria } from '../validators/user-search-criteria';
+import { IsPublic } from '@app/core/decorators';
 
 @Resolver((of) => UserModel)
 export class UserResolver {

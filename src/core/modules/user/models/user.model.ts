@@ -1,3 +1,10 @@
+import { BankAccountOwnerModel } from '@app/bank-account/models/bank-account-owner.model';
+import { BankAccountStatementModel } from '@app/bank-account/models/bank-account-transaction.model';
+import { BankAccountModel } from '@app/bank-account/models/bank-account.model';
+import { DefaultFields } from '@core/constants/entitites/default.fields';
+import { SystemRoleModel } from '@core/modules/user/models/system-roles.model';
+import { AsEither, AsInput, AsOutput } from '@core/validators';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ApiResponseProperty } from '@nestjs/swagger';
 import {
   IsDate,
@@ -11,23 +18,16 @@ import {
   IsUUID,
   MaxLength,
 } from 'class-validator';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   Entity,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { SystemRoleModel } from '@core/modules/user/models/system-roles.model';
-import { AsEither, AsInput, AsOutput } from '@core/validators';
-import { DefaultFields } from '@core/constants/entitites/default.fields';
 import { Profile } from './profile.model';
 
 @ObjectType()
@@ -156,25 +156,48 @@ export class UserModel extends DefaultFields {
   @ApiResponseProperty()
   profile?: Profile;
 
-  // @Field(type => [String])
-  // get permissions() {
-  //   const perms = [];
+  @Field((type) => [BankAccountOwnerModel], { nullable: true })
+  @OneToMany((type) => BankAccountOwnerModel, (owner) => owner.user)
+  @IsNotEmpty(AsInput)
+  @JoinTable()
+  accounts?: BankAccountOwnerModel[];
 
-  //   if (this.systemRoles && this.systemRoles.length > 0) {
-  //     this.systemRoles.map(
-  //       role =>
-  //         role.permissions &&
-  //         role.permissions.length > 0 &&
-  //         role.permissions.map(perm => perms.push(perm.name)),
-  //     );
-  //   }
-  //   return perms;
-  // }
+  @Field((type) => [BankAccountStatementModel], { nullable: true })
+  @OneToMany((type) => BankAccountStatementModel, (editor) => editor.createdBy)
+  @IsNotEmpty(AsInput)
+  @JoinTable()
+  trxCreator?: BankAccountStatementModel[];
 
-  // hasPermission?(permission): boolean {
-  //   const permissions = this.systemRoles.map(role => {
-  //     return role.permissions.map(perm => perm.name === permission);
-  //   });
-  //   return false;
-  // }
+  @Field((type) => [BankAccountStatementModel], { nullable: true })
+  @OneToMany(
+    (type) => BankAccountStatementModel,
+    (editor) => editor.lastUpdatedBy,
+  )
+  @IsNotEmpty(AsInput)
+  @JoinTable()
+  trxEditor?: BankAccountStatementModel[];
+
+  @Field((type) => [BankAccountModel], { nullable: true })
+  @OneToMany((type) => BankAccountModel, (editor) => editor.lastUpdatedBy)
+  @IsNotEmpty(AsInput)
+  @JoinTable()
+  bankAccountCreator?: BankAccountModel[];
+
+  @Field((type) => [BankAccountModel], { nullable: true })
+  @OneToMany((type) => BankAccountModel, (editor) => editor.lastUpdatedBy)
+  @IsNotEmpty(AsInput)
+  @JoinTable()
+  bankAccountEditor?: BankAccountModel[];
+
+  @Field((type) => [BankAccountOwnerModel], { nullable: true })
+  @OneToMany((type) => BankAccountOwnerModel, (editor) => editor.createdBy)
+  @IsNotEmpty(AsInput)
+  @JoinTable()
+  accountOwnerCreator?: BankAccountOwnerModel[];
+
+  @Field((type) => [BankAccountOwnerModel], { nullable: true })
+  @OneToMany((type) => BankAccountOwnerModel, (editor) => editor.lastUpdatedBy)
+  @IsNotEmpty(AsInput)
+  @JoinTable()
+  accountOwnerEditor?: BankAccountOwnerModel[];
 }

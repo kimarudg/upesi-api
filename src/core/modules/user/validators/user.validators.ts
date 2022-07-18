@@ -1,3 +1,4 @@
+import { Field, InputType } from '@nestjs/graphql';
 import {
   IsBoolean,
   IsEmail,
@@ -6,7 +7,6 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { Field, InputType } from '@nestjs/graphql';
 import { Profile } from './../models/profile.model';
 import { ProfileInput } from './profile.validator';
 import { SystemRoleInput } from './system-role.validator';
@@ -26,6 +26,7 @@ export class BaseUserInput {
   profile: ProfileInput;
 }
 
+// tslint:disable-next-line: max-classes-per-file
 @InputType()
 export class CreateUserInput extends BaseUserInput {
   @Field((type) => Boolean, { nullable: true })
@@ -43,6 +44,7 @@ export class CreateUserInput extends BaseUserInput {
   systemRoles: SystemRoleInput[];
 }
 
+// tslint:disable-next-line: max-classes-per-file
 @InputType()
 export class RegisterUserInput extends BaseUserInput {
   @Field((type) => String, { nullable: true })
