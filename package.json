@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "migration:generate": "rimraf dist && nest build && node ./node_modules/typeorm/cli.js migration:generate",
     "migration:run": "rimraf dist && nest build && node ./node_modules/typeorm/cli.js migration:run",
-    "start": "node dist/main.js",
+    "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main.js",
