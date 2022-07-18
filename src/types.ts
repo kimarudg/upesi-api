@@ -11,6 +11,7 @@ const serviceTypes = {
   AuthService: Symbol('AuthService'),
   LoggerService: Symbol('LoggerService'),
   BankAccountService: Symbol('BankAccountService'),
+  BankAccountStatementService: Symbol('BankAccountStatementService'),
 };
 
 const repositoryTypes = {
