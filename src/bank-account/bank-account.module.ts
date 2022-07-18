@@ -10,6 +10,11 @@ const serviceProvider: ClassProvider = {
   useClass: BankAccountService,
 };
 
+const statementProvider: ClassProvider = {
+  provide: TYPES.BankAccountStatementService,
+  useClass: BankAccountStatementService,
+};
+
 const repositoryProvider: ClassProvider = {
   provide: TYPES.BankAccountRepository,
   useClass: BankAccountRepository,
@@ -17,9 +22,14 @@ const repositoryProvider: ClassProvider = {
 
 const resolvers = [BankAccountResolver];
 const services = [BankAccountService];
-const providers = [serviceProvider, repositoryProvider];
+const providers = [serviceProvider, statementProvider, repositoryProvider];
 
 @Module({
-  providers: [...resolvers, ...services, ...providers, BankAccountStatementService],
+  providers: [
+    ...resolvers,
+    ...services,
+    ...providers,
+    BankAccountStatementService,
+  ],
 })
 export class BankAccountModule {}
