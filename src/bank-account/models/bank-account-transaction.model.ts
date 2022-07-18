@@ -31,6 +31,15 @@ import {
 import { UserModel } from './../../core/modules/user/models/user.model';
 import { BankAccountModel } from './bank-account.model';
 
+export enum AccountOperationType {
+  Debit = 'debit',
+  Credit = 'credit',
+}
+
+registerEnumType(AccountOperationType, {
+  name: 'AccountOperationType',
+});
+
 @ObjectType()
 @Entity({ name: 'bank_account_statement' })
 export class BankAccountStatementModel {
@@ -48,7 +57,7 @@ export class BankAccountStatementModel {
   @JoinColumn({ name: 'bank_account_id' })
   account: BankAccountModel;
 
-  @Field((type) => Number, { nullable: false })
+  @Field((type) => Number, { nullable: true })
   @Column({
     name: 'debit',
     nullable: true,
@@ -57,7 +66,7 @@ export class BankAccountStatementModel {
   @ApiResponseProperty()
   debit?: number;
 
-  @Field((type) => Number, { nullable: false })
+  @Field((type) => Number, { nullable: true })
   @Column({
     name: 'credit',
     nullable: true,
