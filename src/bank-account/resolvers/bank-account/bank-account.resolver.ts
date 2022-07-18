@@ -1,3 +1,4 @@
+import { BankAccountStatementModel } from '@app/bank-account/models/bank-account-transaction.model';
 import { UserModel } from '@core/modules/user/models/user.model';
 import { BankAccountModel } from '@app/bank-account/models/bank-account.model';
 import { BankAccountResponse } from '@app/bank-account/responses/bank-account.response';
@@ -6,6 +7,8 @@ import { BankAccountInput } from '@app/bank-account/validators/bank-account.vali
 import { TYPES } from '@app/types';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { BankAccountStatementService } from '@app/bank-account/services/bank-account-statement/bank-account-statement.service';
+import { BankAccountStatementResponse } from '@app/bank-account/responses/bank-account-statement.response';
 
 @Resolver((of) => BankAccountModel)
 export class BankAccountResolver {
@@ -25,6 +28,48 @@ export class BankAccountResolver {
     return new BankAccountResponse(records, count);
   }
 
+  @Mutation(() => BankAccountStatementModel)
+  async depositAccount(
+    @Context('req') request: any,
+    @Args({
+      name: 'bankAccount',
+      type: () => String,
+      nullable: false,
+    })
+    bankAccount: string,
+
+    @Args({
+      name: 'amount',
+      type: () => Number,
+      nullable: false,
+    })
+    amount: number,
+  ) {
+    const user = request.user;
+    return this.statementService.debitAccount(bankAccount, amount, user);
+  }
+
+  @Mutation(() => BankAccountStatementModel)
+  async withdrawAccount(
+    @Context('req') request: any,
+    @Args({
+      name: 'bankAccount',
+      type: () => String,
+      nullable: false,
+    })
+    bankAccount: string,
+
+    @Args({
+      name: 'amount',
+      type: () => Number,
+      nullable: false,
+    })
+    amount: number,
+  ) {
+    const user = request.user;
+    return this.statementService.withdrawAccount(bankAccount, amount, user);
+  }
+
   @Mutation(() => BankAccountModel)
   async createBankAccount(
     @Context('req') request: any,
@@ -42,5 +87,7 @@ export class BankAccountResolver {
   constructor(
     @Inject(TYPES.BankAccountService)
     private readonly service: BankAccountService,
+    @Inject(TYPES.BankAccountStatementService)
+    private readonly statementService: BankAccountStatementService,
   ) {}
 }
