@@ -6,11 +6,13 @@ process.env.ENV_PATH
 
 module.exports = {
   type: 'postgres',
-  host: process.env.PGHOST,
-  port: Number.parseInt(process.env.PGPORT, 2),
-  username: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
+  //   host: process.env.PGHOST,
+  //   port: Number.parseInt(process.env.PGPORT, 2),
+  //   username: process.env.PGUSER,
+  //   password: process.env.PGPASSWORD,
+  //   database: process.env.PGDATABASE,
+  url: process.env.DATABASE_URL,
+
   ssl:
     process.env.NODE_ENV === 'production'
       ? { rejectUnauthorized: false }
