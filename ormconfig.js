@@ -13,10 +13,9 @@ module.exports = {
   //   database: process.env.PGDATABASE,
   url: process.env.DATABASE_URL,
 
-  ssl:
-    process.env.NODE_ENV === 'production'
-      ? { rejectUnauthorized: false }
-      : false,
+  ssl: {
+    rejectUnauthorized: false,
+  },
   entities: ['dist/**/*.model.js'],
   migrations: ['dist/core/modules/database/migrations/*.js'],
   cli: {
