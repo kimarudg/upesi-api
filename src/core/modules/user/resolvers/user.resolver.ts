@@ -94,6 +94,7 @@ export class UserResolver {
     return this.service.createUser(user);
   }
 
+  @IsPublic()
   @Mutation((returns) => UserModel)
   async registerUser(
     @Args({ name: 'user', type: () => RegisterUserInput, nullable: false })
