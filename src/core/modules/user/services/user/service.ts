@@ -96,7 +96,7 @@ export class UserService {
       phone,
       passwordHash,
       needPasswordChange: false,
-      confirmed: false,
+      confirmed: true,
       active: true,
       profile,
     };
