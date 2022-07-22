@@ -24,7 +24,6 @@ export class BankAccountRepository extends Repository<BankAccountModel> {
     search?,
   ) {
     return this.createQueryBuilder('bankAccount')
-      .leftJoinAndSelect('bankAccount.user', 'user')
       .leftJoinAndSelect('bankAccount.owners', 'owners')
       .where(
         'bankAccount.deleted = :deleted and bankAccount.archived = :archived',
