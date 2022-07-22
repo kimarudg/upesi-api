@@ -47,7 +47,7 @@ export class BankAccountService {
     userId: string,
     skip: number,
     take: number,
-    searchParams,
+    searchParams?,
   ) {
     return this.repository.getPaginatedUserAccounts(
       userId,

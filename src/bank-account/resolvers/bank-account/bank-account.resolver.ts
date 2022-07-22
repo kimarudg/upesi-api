@@ -1,23 +1,25 @@
 import { BankAccountStatementModel } from '@app/bank-account/models/bank-account-transaction.model';
-import { UserModel } from '@core/modules/user/models/user.model';
 import { BankAccountModel } from '@app/bank-account/models/bank-account.model';
+import { BankAccountStatementResponse } from '@app/bank-account/responses/bank-account-statement.response';
 import { BankAccountResponse } from '@app/bank-account/responses/bank-account.response';
+import { BankAccountStatementService } from '@app/bank-account/services/bank-account-statement/bank-account-statement.service';
 import { BankAccountService } from '@app/bank-account/services/bank-account/bank-account.service';
 import { BankAccountInput } from '@app/bank-account/validators/bank-account.validators';
+import { DateRange } from '@app/core/modules/user/validators/date-range.validators';
 import { TYPES } from '@app/types';
+import { UserModel } from '@core/modules/user/models/user.model';
 import { Inject, NotFoundException, UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { BankAccountStatementService } from '@app/bank-account/services/bank-account-statement/bank-account-statement.service';
-import { BankAccountStatementResponse } from '@app/bank-account/responses/bank-account-statement.response';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver((of) => BankAccountModel)
 export class BankAccountResolver {
   @Query(() => BankAccountResponse)
   async getUserBankAccounts(
-    @Args('id') id: string,
-    @Args('skip') skip: number,
-    @Args('take') take: number,
-    @Args('search') search: string,
+    @Args({ name: 'userId', type: () => String, nullable: false }) id: string,
+    @Args({ name: 'skip', type: () => Int, nullable: false }) skip: number,
+    @Args({ name: 'take', type: () => Int, nullable: false }) take: number,
+    @Args({ name: 'search', type: () => String, nullable: true })
+    search?: string,
   ): Promise<BankAccountResponse> {
     const [records, count] = await this.service.getUserAccounts(
       id,
@@ -26,6 +28,33 @@ export class BankAccountResolver {
       search,
     );
     return new BankAccountResponse(records, count);
+  }
+
+  @Query(() => BankAccountStatementResponse)
+  async getAccountStatement(
+    @Context('req') request: any,
+    @Args({
+      name: 'bankAccount',
+      type: () => String,
+      nullable: false,
+    })
+    bankAccount: string,
+    @Args({
+      name: 'dateRange',
+      type: () => DateRange,
+      nullable: false,
+    })
+    dateRange: DateRange,
+    @Args({ name: 'skip', type: () => Int, nullable: true }) skip = 0,
+    @Args({ name: 'take', type: () => Int, nullable: true }) take = 50,
+  ) {
+    const [records, count] = await this.statementService.accountStatement(
+      bankAccount,
+      dateRange,
+      skip,
+      take,
+    );
+    return new BankAccountStatementResponse(records, count);
   }
 
   @Mutation(() => BankAccountStatementModel)
