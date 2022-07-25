@@ -1,6 +1,7 @@
+import { DateRange } from '@app/core/modules/user/validators/date-range.validators';
+import { BankAccountStatementRepository } from './../../repositories/bank-account-statement.repository';
 import { BankAccountStatementModel } from '@app/bank-account/models/bank-account-transaction.model';
 import { BankAccountModel } from '@app/bank-account/models/bank-account.model';
-import { BankAccountService } from '@app/bank-account/services/bank-account/bank-account.service';
 import { inTransaction } from '@app/core/modules/database/';
 import { TYPES } from '@app/types';
 import {
@@ -39,7 +40,7 @@ export class BankAccountStatementService {
   }
 
   async withdrawAccount(accountId: string, amount: number, editor: UserModel) {
-    return inTransaction(this.accountRepository.manager, async (manager) => {
+    return inTransaction(this.manager, async (manager) => {
       const bankAccount = await manager
         .findOneOrFail(BankAccountModel, accountId)
         .catch(() => {
@@ -68,9 +69,30 @@ export class BankAccountStatementService {
     });
   }
 
+  async accountStatement(
+    accountID: string,
+    dateRange: DateRange,
+    skip: number = 0,
+    take: number = 50,
+  ) {
+    const account = await this.manager
+      .findOneOrFail(BankAccountStatementModel, accountID)
+      .catch(() => {
+        throw new NotFoundException(`Account with id:${accountID} not found!`);
+      });
+
+    const repository = this.manager.getCustomRepository(
+      BankAccountStatementRepository,
+    );
+    return repository.findStatementByAccountId(
+      accountID,
+      skip,
+      take,
+      dateRange,
+    );
+  }
+
   constructor(
-    @Inject(TYPES.BankAccountRepository)
-    private accountRepository: BankAccountRepository,
     @Inject(TYPES.EntityManager)
     private readonly manager: EntityManager,
   ) {}

@@ -43,6 +43,7 @@
     "chance": "^1.1.8",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
+    "currency-list": "^1.0.8",
     "graphql": "^15.6.0",
     "graphql-tools": "7.0.4",
     "graphql-type-json": "^0.3.2",

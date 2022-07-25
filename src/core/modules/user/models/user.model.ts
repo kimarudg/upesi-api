@@ -189,6 +189,12 @@ export class UserModel extends DefaultFields {
   @JoinTable()
   bankAccountEditor?: BankAccountModel[];
 
+  @Field((type) => [BankAccountModel], { nullable: true })
+  @OneToMany((type) => BankAccountModel, (editor) => editor.approvedBy)
+  @IsNotEmpty(AsInput)
+  @JoinTable()
+  bankAccountApproved?: BankAccountModel[];
+
   @Field((type) => [BankAccountOwnerModel], { nullable: true })
   @OneToMany((type) => BankAccountOwnerModel, (editor) => editor.createdBy)
   @IsNotEmpty(AsInput)

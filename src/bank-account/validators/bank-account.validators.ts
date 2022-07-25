@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
 import {
   IsBoolean,
   IsEmail,
@@ -20,6 +21,9 @@ export class BankAccountInput {
   @IsNotEmpty()
   @IsString()
   reference: string;
+
+  @Field((type) => GraphQLJSONObject, { nullable: false })
+  currency: { [key: string]: any }[];
 
   @Field((type) => [BankAccountOwnerInput])
   @IsNotEmpty()
