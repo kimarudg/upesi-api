@@ -95,6 +95,9 @@ export class AuthService {
     const user = await this.userService.repository
       .createQueryBuilder('user')
       .addSelect('user.passwordHash')
+      .leftJoinAndSelect('user.systemRoles', 'systemRoles')
+      .leftJoinAndSelect('systemRoles.permissions', 'permissions')
+      .leftJoinAndSelect('permissions.resource', 'resource')
       .where('email = :email', { email })
       .andWhere('blocked = :blocked', { blocked: false })
       .getOne();

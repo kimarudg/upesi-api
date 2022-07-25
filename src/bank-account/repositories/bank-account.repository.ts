@@ -23,7 +23,7 @@ export class BankAccountRepository extends Repository<BankAccountModel> {
     take: number,
     search?,
   ) {
-    return this.createQueryBuilder('bankAccount')
+    const q = this.createQueryBuilder('bankAccount')
       .leftJoinAndSelect('bankAccount.owners', 'owners')
       .where(
         'bankAccount.deleted = :deleted and bankAccount.archived = :archived',
@@ -32,9 +32,9 @@ export class BankAccountRepository extends Repository<BankAccountModel> {
           archived: false,
         },
       )
-      .andWhere('owners.id = :userId', { userId })
+      .andWhere('owners.user_id = :userId', { userId })
       .skip(skip)
-      .take(take)
-      .getManyAndCount();
+      .take(take);
+    return q.getManyAndCount();
   }
 }

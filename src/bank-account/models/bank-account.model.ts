@@ -15,6 +15,7 @@ import {
   IsUUID,
   MaxLength,
 } from 'class-validator';
+import { GraphQLJSONObject } from 'graphql-type-json';
 import {
   Column,
   CreateDateColumn,
@@ -63,7 +64,7 @@ export class BankAccountModel {
   @ApiResponseProperty()
   currentBalance: number;
 
-  @Field((type) => [BankAccountOwnerModel], { nullable: true })
+  @Field((type) => [BankAccountOwnerModel], { nullable: false })
   @OneToMany((type) => BankAccountOwnerModel, (owner) => owner.account)
   @IsNotEmpty(AsInput)
   @JoinTable()
@@ -79,7 +80,7 @@ export class BankAccountModel {
   @ApiResponseProperty()
   createdBy?: UserModel;
 
-  @Field(() => UserModel, { nullable: false })
+  @Field(() => UserModel, { nullable: true })
   @ManyToOne(() => UserModel, (user) => user.bankAccountEditor, {
     nullable: true,
   })
@@ -101,14 +102,51 @@ export class BankAccountModel {
   @ApiResponseProperty()
   deleted?: boolean;
 
+  @Field((type) => GraphQLJSONObject, { nullable: true })
+  @Column({ name: 'currency', nullable: false, type: 'jsonb' })
+  @IsOptional(AsEither)
+  @ApiResponseProperty()
+  currency: { [key: string]: any }[];
+
+  @Field(() => Boolean, { nullable: true })
+  @Column({ name: 'approved', nullable: true })
+  @ApiResponseProperty()
+  approved?: boolean;
+
+  @Field(() => UserModel, { nullable: true })
+  @ManyToOne(() => UserModel, (user) => user.bankAccountApproved, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'approved_by' })
+  @IsOptional(AsEither)
+  @IsString(AsOutput)
+  @ApiResponseProperty()
+  approvedBy?: UserModel;
+
+  @Field({ nullable: true })
+  @Column({
+    name: 'date_approved',
+    nullable: true,
+    type: 'timestamp with time zone',
+  })
+  @IsDefined(AsOutput)
+  @IsDate(AsOutput)
+  @IsEmpty(AsInput)
+  @ApiResponseProperty()
+  dateApproved?: Date;
+
   @Field(() => Date, { nullable: false })
   @CreateDateColumn({ name: 'date_created', type: 'timestamptz' })
   @IsOptional(AsEither)
   @ApiResponseProperty()
   dateCreated?: Date;
 
-  @Field(() => Date, { nullable: false })
-  @UpdateDateColumn({ name: 'last_updated', type: 'timestamptz' })
+  @Field(() => Date, { nullable: true })
+  @UpdateDateColumn({
+    name: 'last_updated',
+    type: 'timestamptz',
+    nullable: true,
+  })
   @IsOptional(AsEither)
   @ApiResponseProperty()
   lastUpdated?: Date;

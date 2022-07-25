@@ -51,6 +51,7 @@ export class BankAccountStatementModel {
   @ApiResponseProperty()
   id?: string;
 
+  @Field((type) => BankAccountModel, { nullable: false })
   @ManyToOne(() => BankAccountModel, (acc) => acc.owners, {
     nullable: false,
   })
