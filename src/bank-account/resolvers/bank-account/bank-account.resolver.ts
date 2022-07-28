@@ -65,6 +65,36 @@ export class BankAccountResolver {
     return new BankAccountStatementResponse(records, count);
   }
 
+  @Query(() => BankAccountStatementResponse)
+  async userMonthlyAccountBalance(
+    @Context('req') request: any,
+    @Args({
+      name: 'dateRange',
+      type: () => DateRange,
+      nullable: false,
+    })
+    dateRange: DateRange,
+    @Args({ name: 'skip', type: () => Int, nullable: true }) skip = 0,
+    @Args({ name: 'take', type: () => Int, nullable: true }) take = 50,
+  ) {
+    const user: UserModel = request.user;
+    const [records, count] =
+      await this.statementService.userMonthlyAccountBalance(
+        dateRange,
+        skip,
+        take,
+        user,
+      );
+    return new BankAccountStatementResponse(records, count);
+  }
+
+  @Mutation(() => String)
+  async generateRandomData(@Context('req') request: any) {
+    const user = request.user;
+    this.statementService.generateDummyData(user);
+    return 'Done';
+  }
+
   @Mutation(() => BankAccountStatementModel)
   async depositAccount(
     @Context('req') request: any,
