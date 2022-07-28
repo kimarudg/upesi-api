@@ -6,6 +6,7 @@ import { BankAccountStatementService } from '@app/bank-account/services/bank-acc
 import { BankAccountService } from '@app/bank-account/services/bank-account/bank-account.service';
 import { BankAccountApprovalInput } from '@app/bank-account/validators/bank-account-approval.validators';
 import { BankAccountInput } from '@app/bank-account/validators/bank-account.validators';
+import { BankTransferInput } from '@app/bank-account/validators/bank-transfer.validators';
 import { Action } from '@app/core/constants';
 import { Permissions } from '@app/core/decorators/permission.decorators';
 import { DateRange } from '@app/core/modules/user/validators/date-range.validators';
@@ -135,6 +136,22 @@ export class BankAccountResolver {
   ) {
     const user = request.user;
     return this.statementService.withdrawAccount(bankAccount, amount, user);
+  }
+
+  @Mutation(() => BankAccountStatementResponse)
+  async transferMoney(
+    @Context('req') request: any,
+
+    @Args({
+      name: 'transfer',
+      type: () => BankTransferInput,
+      nullable: false,
+    })
+    transfer: BankTransferInput,
+  ) {
+    const user = request.user;
+    const data = await this.statementService.transferMoney(transfer, user);
+    return new BankAccountStatementResponse(data, data.length);
   }
 
   @Mutation(() => BankAccountModel)

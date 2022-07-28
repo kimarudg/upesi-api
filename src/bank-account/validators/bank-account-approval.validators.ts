@@ -7,7 +7,6 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { AccountMandateRoles } from '../models/bank-account-owner.model';
 
 @InputType()
 export class BankAccountApprovalInput {

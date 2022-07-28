@@ -14,6 +14,7 @@ import {
 import { EntityManager } from 'typeorm';
 import { UserModel } from './../../../core/modules/user/models/user.model';
 import { BankAccountRepository } from './../../repositories/bank-account.repository';
+import { BankTransferInput } from '@app/bank-account/validators/bank-transfer.validators';
 
 @Injectable()
 export class BankAccountStatementService {
@@ -90,6 +91,49 @@ export class BankAccountStatementService {
       }
       return manager.save(BankAccountStatementModel, statement);
     });
+  }
+
+  async transferMoney(transfer: BankTransferInput, owner: UserModel) {
+    const {
+      sourceAccount: sourceAccountId,
+      destinationAccount: destinationAccountId,
+      amount,
+    } = transfer;
+    const repository = this.manager.getCustomRepository(BankAccountRepository);
+    const sourceAccount = await this.manager
+      .findOneOrFail(BankAccountModel, {
+        where: { id: sourceAccountId },
+        relations: ['owners', 'owners.user'],
+      })
+      .catch(() => {
+        throw new Error(`An account with id ${sourceAccountId} not found`);
+      });
+
+    const destinationAccount = await this.manager
+      .findOneOrFail(BankAccountModel, {
+        where: { id: destinationAccountId },
+        relations: ['owners', 'owners.user'],
+      })
+      .catch(() => {
+        throw new Error(`An account with id ${destinationAccountId} not found`);
+      });
+
+    const accountOwners = sourceAccount.owners.find(
+      (o) => o.user.id === owner.id,
+    );
+    if (!accountOwners) {
+      throw new Error(`Account is not owned by the user`);
+    }
+
+    if (amount > sourceAccount.currentBalance) {
+      throw new Error(
+        `The Account does not have enough money to transfer ${amount}`,
+      );
+    }
+    return [
+      await this.withdrawAccount(sourceAccountId, amount, owner),
+      await this.debitAccount(destinationAccountId, amount, owner),
+    ];
   }
 
   async accountStatement(
