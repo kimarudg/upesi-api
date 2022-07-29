@@ -48,12 +48,6 @@ export class BankAccountStatementRepository extends Repository<BankAccountStatem
         },
       );
     }
-    // console.log(query.getSql());
-    // console.log('+++++++++++++++++++++++++++++++++++++++++==');
-    // console.log('+++++++++++++++++++++++++++++++++++++++++==');
-    // console.log('+++++++++++++++++++++++++++++++++++++++++==');
-    // console.log(query.getQueryAndParameters());
-
     return query.getManyAndCount();
   }
 }

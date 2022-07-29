@@ -1,3 +1,4 @@
+import { TerminalModel } from '@app/bank-account/models/terminal.model';
 import { DateRange } from '@app/core/modules/user/validators/date-range.validators';
 import { BankAccountStatementRepository } from './../../repositories/bank-account-statement.repository';
 import { BankAccountStatementModel } from '@app/bank-account/models/bank-account-transaction.model';
@@ -90,6 +91,66 @@ export class BankAccountStatementService {
         statement.dateCreated = date;
       }
       return manager.save(BankAccountStatementModel, statement);
+    });
+  }
+
+  async withdrawFromTerminal(
+    accountId: string,
+    terminalId: string,
+    amount: number,
+    editor: UserModel,
+    date?: Date,
+  ) {
+    return await inTransaction(this.manager, async (manager) => {
+      const terminal = await manager
+        .findOneOrFail(TerminalModel, terminalId, { relations: ['createdBy'] })
+        .catch(() => {
+          throw new NotFoundException(`ATM not Found !`);
+        });
+
+      const atmBalance = (terminal.currentBalance || 0) - amount;
+      if (atmBalance < 0) {
+        throw new Error(
+          `The ATM does not have enough balance to withdraw ${amount}`,
+        );
+      }
+
+      const bankAccount = await manager
+        .findOneOrFail(BankAccountModel, accountId)
+        .catch(() => {
+          throw new NotFoundException(
+            `Account with id:${accountId} not found!`,
+          );
+        });
+
+      const resultingBalance = (bankAccount.currentBalance || 0) - amount;
+      if (resultingBalance < 0) {
+        throw new Error(
+          `The account does not have enough balance to withdraw ${amount}`,
+        );
+      }
+
+      terminal.currentBalance = atmBalance;
+      await manager.save(TerminalModel, terminal);
+
+      bankAccount.currentBalance = resultingBalance;
+      bankAccount.lastUpdatedBy = editor;
+      if (date) {
+        bankAccount.lastUpdated = date;
+      }
+      await manager.save(BankAccountModel, bankAccount);
+
+      // create statement
+      const statement = Object.assign(new BankAccountStatementModel(), {
+        account: bankAccount,
+        credit: amount,
+        createdBy: editor,
+      });
+      if (date) {
+        statement.dateCreated = date;
+      }
+      manager.save(BankAccountStatementModel, statement);
+      return { bankAccount, terminal };
     });
   }
 

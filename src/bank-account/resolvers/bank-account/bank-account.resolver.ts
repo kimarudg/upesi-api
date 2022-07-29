@@ -1,12 +1,17 @@
+import { TerminalModel } from '@app/bank-account/models/terminal.model';
+import { GraphQLJSONObject } from 'graphql-type-json';
 import { BankAccountStatementModel } from '@app/bank-account/models/bank-account-transaction.model';
 import { BankAccountModel } from '@app/bank-account/models/bank-account.model';
 import { BankAccountStatementResponse } from '@app/bank-account/responses/bank-account-statement.response';
 import { BankAccountResponse } from '@app/bank-account/responses/bank-account.response';
+import { TerminalWithdawResponse } from '@app/bank-account/responses/terminal-withdraw.response';
+import { TerminalResponse } from '@app/bank-account/responses/terminal.response';
 import { BankAccountStatementService } from '@app/bank-account/services/bank-account-statement/bank-account-statement.service';
 import { BankAccountService } from '@app/bank-account/services/bank-account/bank-account.service';
 import { BankAccountApprovalInput } from '@app/bank-account/validators/bank-account-approval.validators';
 import { BankAccountInput } from '@app/bank-account/validators/bank-account.validators';
 import { BankTransferInput } from '@app/bank-account/validators/bank-transfer.validators';
+import { TerminalInput } from '@app/bank-account/validators/terminal.validators';
 import { Action } from '@app/core/constants';
 import { Permissions } from '@app/core/decorators/permission.decorators';
 import { DateRange } from '@app/core/modules/user/validators/date-range.validators';
@@ -64,6 +69,16 @@ export class BankAccountResolver {
       take,
     );
     return new BankAccountStatementResponse(records, count);
+  }
+
+  @Query(() => TerminalResponse)
+  async listTerminals(
+    @Context('req') request: any,
+    @Args({ name: 'skip', type: () => Int, nullable: true }) skip = 0,
+    @Args({ name: 'take', type: () => Int, nullable: true }) take = 50,
+  ) {
+    const [records, count] = await this.service.listTerminals(skip, take);
+    return new TerminalResponse(records, count);
   }
 
   @Query(() => BankAccountStatementResponse)
@@ -152,6 +167,56 @@ export class BankAccountResolver {
     const user = request.user;
     const data = await this.statementService.transferMoney(transfer, user);
     return new BankAccountStatementResponse(data, data.length);
+  }
+
+  @Mutation(() => TerminalWithdawResponse)
+  async withdrawFromTerminal(
+    @Context('req') request: any,
+    @Args({
+      name: 'bankAccount',
+      type: () => String,
+      nullable: false,
+    })
+    bankAccount: string,
+
+    @Args({
+      name: 'terminalId',
+      type: () => String,
+      nullable: false,
+    })
+    terminalId: string,
+
+    @Args({
+      name: 'amount',
+      type: () => Int,
+      nullable: false,
+    })
+    amount: number,
+  ) {
+    const user = request.user;
+    const response = await this.statementService.withdrawFromTerminal(
+      bankAccount,
+      terminalId,
+      amount,
+      user,
+    );
+    const bank = response.bankAccount;
+    const terminal = response.terminal;
+    return new TerminalWithdawResponse(terminal, bank);
+  }
+
+  @Mutation(() => BankAccountModel)
+  async createTerminal(
+    @Context('req') request: any,
+    @Args({
+      name: 'terminal',
+      type: () => TerminalInput,
+      nullable: false,
+    })
+    terminal: TerminalInput,
+  ) {
+    const user: UserModel = request.user;
+    return this.service.createTerminal(terminal, user);
   }
 
   @Mutation(() => BankAccountModel)

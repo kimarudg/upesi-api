@@ -1,3 +1,5 @@
+import { TerminalModel } from '@app/bank-account/models/terminal.model';
+import { TerminalInput } from './../../validators/terminal.validators';
 import { inTransaction } from '@app/core/modules/database/';
 import { EntityManager } from 'typeorm';
 import { BankAccountOwnerModel } from '@app/bank-account/models/bank-account-owner.model';
@@ -45,6 +47,23 @@ export class BankAccountService {
     );
     await this.manager.save(BankAccountOwnerModel, owners);
     return this.repository.findById(bankAccount.id);
+  }
+
+  async createTerminal(terminal: TerminalInput, editor: UserModel) {
+    return this.manager.save(TerminalModel, {
+      name: terminal.name,
+      currentBalance: terminal.currentBalance,
+    });
+  }
+
+  async listTerminals(skip: number = 0, take: number = 20) {
+    return this.manager
+      .getRepository(TerminalModel)
+      .createQueryBuilder('terminal')
+      .leftJoinAndSelect('terminal.createdBy', 'createdBy')
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
   }
 
   async applyBankAccount(params: BankAccountInput, editor: UserModel) {

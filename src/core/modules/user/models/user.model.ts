@@ -1,6 +1,7 @@
 import { BankAccountOwnerModel } from '@app/bank-account/models/bank-account-owner.model';
 import { BankAccountStatementModel } from '@app/bank-account/models/bank-account-transaction.model';
 import { BankAccountModel } from '@app/bank-account/models/bank-account.model';
+import { TerminalModel } from '@app/bank-account/models/terminal.model';
 import { DefaultFields } from '@core/constants/entitites/default.fields';
 import { SystemRoleModel } from '@core/modules/user/models/system-roles.model';
 import { AsEither, AsInput, AsOutput } from '@core/validators';
@@ -25,6 +26,7 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
